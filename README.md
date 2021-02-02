@@ -18,7 +18,5 @@ Place your client_secrets.json in the work folder and run the GdriveUpload.py sc
 ## To Do
 
 * Add error handling
-
-* Add support for recursive folders
-
-  
+* Add support for recursive folder
+* Add command line script
