@@ -33,16 +33,17 @@ def newFolder(folderName):  # Create a new folder
     return folderId
 
 
-def listFiles(folderID): # look up new folder ID
-    newFile = open('LinkSummary.csv', 'w') 
-    file_list = drive.ListFile(
-        {'q': f"'{folderID}' in parents and trashed=false"}).GetList()
-    newFile.write("FileName, ShareURL, \n")
-    for folder in file_list:
-        print(folder['originalFilename'], folder['embedLink'])
-        newFile.write('"' + folder['originalFilename'] + '"' + ', ' + folder['embedLink'] + ', \n')
-    newFile.close()
-    os.open(uplFldEntry.get()+'/LinkSummary.csv',os.O_RDWR)
+def listFiles(folderID):  # look up new folder ID
+    with open('LinkSummary.tsv', 'w') as newFile:
+        file_list = drive.ListFile(
+            {'q': f"'{folderID}' in parents and trashed=false"}).GetList()
+        newFile.write("FileName\tShareURL\t\n")
+        for folder in file_list:
+            print(folder['originalFilename'], folder['embedLink'])
+            # newFile.write('"' + folder['originalFilename'] + '"' + ', ' + folder['embedLink'] + ', \n')
+            newFile.write(
+                '"' + folder['originalFilename'] + '"' + '\t' + folder['embedLink'] + '\t\n')
+    os.open(uplFldEntry.get()+'/LinkSummary.tsv', os.O_RDWR)
 
 
 def fileUpload(folderName, file):  # Upload files
@@ -57,11 +58,14 @@ def fileUpload(folderName, file):  # Upload files
     return True
 
 # Functions for Tkinter
+
+
 def uploadPath():  # Create File Dialog to to select export folder
     value = filedialog.askdirectory(
         initialdir=os.getcwd(), title="Upload Folder")
     uplFldEntry.delete(0, "end")
     uplFldEntry.insert(0, value)
+
 
 def upload(folderName, path):
     folder = folderName
@@ -71,6 +75,7 @@ def upload(folderName, path):
     for file in files:
         fileUpload(folder, file)
     listFiles(folderID)
+
 
 # Create window
 window = tk.Tk()
@@ -86,7 +91,7 @@ uplFldLbl.grid(row=1, column=0, padx=5, pady=5, sticky='e')
 uplFldEntry = tk.Entry(width=25)
 uplFldEntry.grid(row=1, column=1, padx=5, pady=5)
 uplFldBtn = tk.Button(text="Select Folder",
-                    command=lambda: uploadPath())
+                      command=lambda: uploadPath())
 uplFldBtn.grid(row=1, column=2, padx=5, pady=5, sticky='w')
 
 # Folder Name
@@ -97,11 +102,8 @@ nameEntry.grid(row=2, column=1, padx=5, pady=5)
 
 # Upload file button
 uplBtn = tk.Button(text="Upload",
-                    command=lambda: upload(nameEntry.get(), uplFldEntry.get()))
+                   command=lambda: upload(nameEntry.get(), uplFldEntry.get()))
 uplBtn.grid(row=2, column=2, padx=5, pady=2, sticky='w')
 
 
-
 window.mainloop()
-
-
